@@ -45,7 +45,7 @@ struct IntervalTimerView: View {
     // single `.sensoryFeedback`, so even a repeated cue (the 3-2-1 tick three seconds running)
     // re-fires because the trigger value always changes.
     #if os(iOS)
-    private enum HapticCue { case work, rest, tick, done }
+    fileprivate enum HapticCue { case work, rest, tick, done }
     @State private var lastHaptic: HapticCue = .work
     @State private var hapticTick: Int = 0
     #endif
@@ -130,16 +130,35 @@ struct IntervalTimerView: View {
         #if os(iOS)
         // iPhone haptics: one modifier emits a different feel per cue, re-firing on every
         // token bump. Fires regardless of strap bond so the timer is fully usable unstrapped.
-        .sensoryFeedback(trigger: hapticTick) { _, _ in
-            switch lastHaptic {
-            case .work: return .impact(weight: .heavy)      // strong cue into WORK
-            case .rest: return .impact(weight: .light)      // soft cue into REST
-            case .tick: return .selection                   // 3-2-1 countdown tick
-            case .done: return .success                     // session complete
-            }
-        }
+        .modifier(IntervalTimerHapticsModifier(hapticTick: hapticTick, lastHaptic: lastHaptic))
         #endif
     }
+}
+
+#if os(iOS)
+private struct IntervalTimerHapticsModifier: ViewModifier {
+    let hapticTick: Int
+    let lastHaptic: IntervalTimerView.HapticCue
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.sensoryFeedback(trigger: hapticTick) { _, _ in
+                switch lastHaptic {
+                case .work: return .impact(weight: .heavy)      // strong cue into WORK
+                case .rest: return .impact(weight: .light)      // soft cue into REST
+                case .tick: return .selection                   // 3-2-1 countdown tick
+                case .done: return .success                     // session complete
+                }
+            }
+        } else {
+            content
+        }
+    }
+}
+#endif
+
+extension IntervalTimerView {
 
     // MARK: Status row
 
