@@ -5,13 +5,13 @@ import Charts   // Swift Charts isn't used by the watch app; the ChartProxy shim
 
 // MARK: - iOS-17 / macOS-14 deprecation shims
 //
-// NOOP ships a split deployment target — the iOS app targets iOS 17 but the
+// NOOP ships a split deployment target — the iOS app targets iOS 16 and the
 // macOS app targets macOS 13 — and the Strand/ + StrandDesign sources compile
 // into BOTH. The two-parameter `onChange(of:initial:_:)` and the optional
 // `ChartProxy.plotFrame` arrived in iOS 17 / macOS 14 and deprecated their
-// predecessors, so a blind swap silences the iOS warning yet fails to compile on
-// macOS 13 (the new overloads don't exist there). These shims call the modern
-// form where available and the legacy form (un-deprecated on macOS 13) otherwise,
+// predecessors, so a blind swap silences the iOS 17+ warning yet fails to compile on
+// iOS 16 / macOS 13 (the new overloads don't exist there). These shims call the modern
+// form where available and the legacy form (un-deprecated on iOS 16 / macOS 13) otherwise,
 // so each deprecation is acknowledged exactly once — here — instead of at every
 // call site. Behaviour is identical to a direct `.onChange` / `plotAreaFrame`.
 

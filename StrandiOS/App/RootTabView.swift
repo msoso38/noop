@@ -727,7 +727,7 @@ private struct FloatingTabBar: View {
 // MARK: - Liquid Glass (iOS 26) with a Material fallback
 
 private extension View {
-    /// Real iOS 26 Liquid Glass where available; `.ultraThinMaterial` on iOS 17–25 — a clean
+    /// Real iOS 26 Liquid Glass where available; `.ultraThinMaterial` on iOS 16+ — a clean
     /// blended degrade so the bar stays modern on new OSes without breaking older ones.
     @ViewBuilder func liquidGlass(in shape: some Shape) -> some View {
         if #available(iOS 26.0, *) {
