@@ -4,6 +4,7 @@ import ActivityKit
 import StrandDesign
 
 /// Live Activity for an active live-HR session — shown on the Lock Screen and in the Dynamic Island.
+@available(iOSApplicationExtension 16.1, *)
 struct NOOPLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: NOOPActivityAttributes.self) { context in
