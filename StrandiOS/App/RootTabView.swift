@@ -731,10 +731,15 @@ private extension View {
     /// blended degrade so the bar stays modern on new OSes without breaking older ones.
     @ViewBuilder func liquidGlass(in shape: some Shape) -> some View {
         if #available(iOS 26.0, *) {
-            self.glassEffect(.regular, in: shape)
+            self.liquidGlassEffect(in: shape)
         } else {
             self.background(.ultraThinMaterial, in: shape)
         }
+    }
+
+    @available(iOS 26.0, *)
+    @ViewBuilder private func liquidGlassEffect(in shape: some Shape) -> some View {
+        self.glassEffect(.regular, in: shape)
     }
 }
 #endif

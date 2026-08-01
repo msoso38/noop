@@ -5,6 +5,7 @@ import ActivityKit
 /// Starts, updates, and ends the live-HR Live Activity. The activity appears on the Lock Screen and
 /// in the Dynamic Island while the strap is bonded and streaming heart rate.
 @MainActor
+@available(iOS 16.1, *)
 final class LiveActivityController {
     private var activity: Activity<NOOPActivityAttributes>?
     private var lastPush: Date = .distantPast
