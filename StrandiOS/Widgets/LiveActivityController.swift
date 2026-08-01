@@ -27,6 +27,7 @@ final class LiveActivityController {
     /// live link, not the sticky "paired" flag) and a heart rate is present; ends the moment the link
     /// drops. Throttled to ~once every 2 s so we stay well under the Live Activity update budget.
     func update(bpm: Int?, recovery: Int?, connected: Bool, effort: Int? = nil) {
+        guard #available(iOS 16.1, *) else { return }
         guard authInfo.areActivitiesEnabled else { return }
 
         // Re-adopt an activity that outlived a previous app session. ActivityKit keeps Live Activities
@@ -85,8 +86,13 @@ final class LiveActivityController {
         // End every NOOP Live Activity, not just our cached handle — covers a straggler from a prior
         // session we never re-adopted (#341) and any rare duplicate. Iterating the live list is the
         // only way to reach activities this controller instance never started.
+        guard #available(iOS 16.1, *) else { return }
         for act in Activity<NOOPActivityAttributes>.activities {
-            await act.end(nil, dismissalPolicy: .immediate)
+            if #available(iOS 16.2, *) {
+                await act.end(nil, dismissalPolicy: .immediate)
+            } else {
+                await act.end(nil)
+            }
         }
         self.activity = nil
     }

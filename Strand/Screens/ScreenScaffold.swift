@@ -67,7 +67,7 @@ struct ScreenScaffold<Content: View, Trailing: View>: View {
         // #697: stop a vertical scroll from drifting/bouncing the screen left-right. `.basedOnSize` only
         // permits horizontal bounce when content genuinely overflows the width (it does not here, the column
         // is width-capped), so the spurious horizontal rubber-band that caused the sideways drift is gone.
-        .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+        .modifier(ScrollBounceBehaviorModifier())
         #endif
         // The flat canvas, plus an optional full-bleed TOP backdrop (Today's day-cycle scene) drawn behind
         // the scroll content — edge-to-edge under the status bar. The scene is CONFINED to the header+hero
@@ -89,7 +89,7 @@ struct ScreenScaffold<Content: View, Trailing: View>: View {
         #if os(iOS)
         // Scroll-to-top on an at-root tab re-tap (#198 follow-up). iOS-only: the tab shell is the only
         // driver, and gating here keeps the two-param onChange off macOS 13. Inert until the signal moves.
-        .onChange(of: scrollToTopSignal) { _, _ in
+        .onChange(of: scrollToTopSignal) { _ in
             withAnimation(.easeOut(duration: 0.35)) { proxy.scrollTo(screenScaffoldTopAnchorID, anchor: .top) }
         }
         #endif
@@ -150,6 +150,21 @@ extension ScreenScaffold where Trailing == EmptyView {
                   topBackground: topBackground, trailing: { EmptyView() }, content: content)
     }
 }
+
+// MARK: - Scroll Bounce Behavior Modifier (iOS 16.4+)
+
+#if os(iOS)
+/// iOS 16.4+ scroll bounce behavior with fallback for earlier versions.
+struct ScrollBounceBehaviorModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.4, *) {
+            content.scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+        } else {
+            content
+        }
+    }
+}
+#endif
 
 /// Applies `.refreshable` only when a refresh hook is provided. A ViewModifier (rather than an
 /// inline `if`) keeps the two branches the same opaque type, and means nil callers — every macOS
