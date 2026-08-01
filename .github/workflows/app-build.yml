@@ -55,7 +55,7 @@ jobs:
           - scheme: NOOPiOS
             destination: 'generic/platform=iOS Simulator'
             extra_args: ''
-            runner: macos-26
+            runner: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
