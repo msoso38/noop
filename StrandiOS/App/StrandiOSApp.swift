@@ -22,7 +22,7 @@ struct StrandiOSApp: App {
     /// Shared cross-screen navigation hook (e.g. Live → Devices). The iOS shell (`RootTabView`)
     /// observes it and presents the Devices manager.
     @StateObject private var router = NavRouter()
-    @State private var liveActivity = LiveActivityController()
+    @State private var liveActivity: LiveActivityController?
     @Environment(\.scenePhase) private var scenePhase
     /// Appearance preference (System/Light/Dark). Default follows the OS; the Settings picker writes it.
     @AppStorage(AppearanceMode.storageKey) private var appearanceRaw = AppearanceMode.system.rawValue
@@ -30,6 +30,11 @@ struct StrandiOSApp: App {
     @AppStorage(ChartStyle.storageKey) private var chartStyleRaw = ChartStyle.titanium.rawValue
 
     init() {
+        if #available(iOS 16.1, *) {
+            _liveActivity = State(initialValue: LiveActivityController())
+        } else {
+            _liveActivity = State(initialValue: nil)
+        }
         #if DEBUG
         // DEBUG-only promo-screenshot harness: when launched with `--demo-hour <Int>`, pin Today to that
         // hour's day-cycle scene + a per-hour stat frame. No-op (active stays nil) when the arg is absent.
@@ -88,7 +93,7 @@ struct StrandiOSApp: App {
                     // different day at the rollover (it previously read `days.last(where: recovery != nil)`,
                     // which kept pointing at yesterday's scored row after Today had moved on).
                     let day = Repository.widgetAnchor(days: model.repo.days)
-                    liveActivity.update(
+                    liveActivity?.update(
                         bpm: model.live.connected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
                         connected: model.live.connected,
@@ -100,7 +105,7 @@ struct StrandiOSApp: App {
                     // #911: same shared anchor as the heartRate site above, so the Live Activity, the
                     // widget, the watch and Today never disagree about which day they describe.
                     let day = Repository.widgetAnchor(days: model.repo.days)
-                    liveActivity.update(
+                    liveActivity?.update(
                         bpm: isConnected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
                         connected: isConnected,

@@ -252,8 +252,8 @@ open Strand.xcodeproj
 
 Notes:
 
-- The `NOOPiOS` and `NOOPiOSWidgets` targets deploy to **iOS 17.0**. (The shared packages still
-  declare a floor of iOS 16 — `.iOS(.v16)` — but the app targets require iOS 17.)
+- The `NOOPiOS` and `NOOPiOSWidgets` targets deploy to **iOS 16.0**. (Live Activities remain
+  16.1+ at runtime, guarded in code.)
 - Running on a physical iPhone needs a signing identity selected in Xcode (a free personal Apple ID
   works for on-device builds). Set `DEVELOPMENT_TEAM` in `Config/BundleIdSecrets.xcconfig` (see
   `Config/BundleIdSecrets.example.xcconfig`) to avoid re-selecting a team in Xcode after every
