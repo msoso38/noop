@@ -6,6 +6,8 @@ import SwiftUI
 struct NOOPWidgetBundle: WidgetBundle {
     var body: some Widget {
         NOOPWidget()
-        NOOPLiveActivity()
+        if #available(iOSApplicationExtension 16.1, *) {
+            NOOPLiveActivity()
+        }
     }
 }
